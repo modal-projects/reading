@@ -35,7 +35,7 @@ image = (
 web_app = fastapi.FastAPI()
 
 
-@app.function(image=image)
+@app.function(image=image, scaledown_window=1800)
 @modal.concurrent(max_inputs=100)
 @modal.asgi_app(label="reading")
 def serve():
