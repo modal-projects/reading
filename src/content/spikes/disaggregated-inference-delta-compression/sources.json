@@ -36,6 +36,18 @@
     "tags": ["transport", "rdma", "systems"]
   },
   {
+    "id": "prfaas-2026",
+    "title": "Prefill-as-a-Service: KVCache of Next-Generation Models Could Go Cross-Datacenter",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2604.15039",
+    "pdfPath": "/spikes/disaggregated-inference-delta-compression/assets/prfaas-cross-dc-prefill.pdf",
+    "authors": ["Ruoyu Qin", "Weiran He", "Yaoyu Wang", "Zheming Li", "Xinran Xu", "Yongwei Wu", "Weimin Zheng", "Mingxing Zhang"],
+    "publishedAt": "2026-04-16",
+    "summary": "PrfaaS pushes prefill-decode disaggregation past a single RDMA fabric. Hybrid-attention models shrink KVCache enough that long-context prefill can run in a standalone, compute-dense cluster and ship KV over commodity Ethernet to local decode clusters. The paper argues that smaller KV alone is not enough: bursty load, skewed request lengths, uneven prefix caches, and fluctuating inter-cluster bandwidth force you to combine selective offloading, bandwidth-aware scheduling, and cache-aware request placement. On an internal 1T-parameter hybrid model, the heterogeneous setup beats homogeneous PD and naive offloading by 54% and 32% throughput.",
+    "whyRelevant": "This is the most direct test of how far PD disaggregation can go in a Modal-shaped world, where prefill and decode capacity may not live behind the same low-latency fabric. It turns the team's rollout-inference bet into a concrete scheduling and placement problem: which prefills are worth shipping across clusters, and how do you keep queueing stable when bandwidth is the variable instead of KVCache size?",
+    "tags": ["prefill-decode", "kvcache", "cross-datacenter", "scheduling"]
+  },
+  {
     "id": "pulse-2026",
     "title": "Understanding and Exploiting Weight Update Sparsity for Communication-Efficient Distributed RL",
     "kind": "paper",

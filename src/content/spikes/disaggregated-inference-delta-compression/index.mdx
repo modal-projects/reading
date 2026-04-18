@@ -17,7 +17,7 @@ tags:
 - delta-compression
 - rl
 updatedAt: '2026-04-18'
-sourceCount: 5
+sourceCount: 6
 ---
 import SourceList from "../../../components/SourceList.astro";
 import sources from "./sources.json";
@@ -54,6 +54,7 @@ topic now comes from systems teams who had to make disaggregated training and in
 - Delta compression is attractive because RL updates are often structured and sparse relative to full weight snapshots.
 - The winning systems pair compression with **point-to-point transfer**, pipelining, and static scheduling.
 - The real operational question is not just speed, but whether weight sync can stay fast enough to avoid train-infer drift while keeping rollout pools warm and autoscalable.
+- Cross-datacenter PD is becoming plausible once KVCache shrinks (hybrid attention), but only with **selective offloading and bandwidth-aware scheduling** to survive bursty, skewed workloads.
 
 ## Suggested reading order
 
@@ -61,6 +62,7 @@ topic now comes from systems teams who had to make disaggregated training and in
 2. Read **Disaggregated Prefill and Decode** to understand the concrete serving split before adding RL-specific weight sync.
 3. Read **Weight Transfer for RL Post-Training in under 2 seconds** as the closest public analogue to the team’s Perplexity/Tinker workstream.
 4. Read **RDMA Point-to-Point Communication for LLM Systems** for the transport layer ideas that make the previous step reusable.
-5. Finish with **PULSE** to evaluate whether sparse delta-style synchronization can be the next optimization once the basic disaggregated path is working.
+5. Read **Prefill-as-a-Service** to see how far PD disaggregation stretches once KVCache shrinks and prefill can ride commodity Ethernet across clusters.
+6. Finish with **PULSE** to evaluate whether sparse delta-style synchronization can be the next optimization once the basic disaggregated path is working.
 
 <SourceList sources={sources} />
