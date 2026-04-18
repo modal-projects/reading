@@ -1,0 +1,70 @@
+[
+  {
+    "id": "deepseek-v3-2024",
+    "title": "DeepSeek-V3 Technical Report",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2412.19437",
+    "pdfPath": "/spikes/training-techniques-for-large-oss-moe-models-on-modal/assets/deepseek-v3-technical-report.pdf",
+    "authors": ["DeepSeek-AI"],
+    "publishedAt": "2024-12-27",
+    "summary": "DeepSeek-V3 is the clearest public report on frontier-scale open MoE training. It ties together sparse expert architecture, Multi-head Latent Attention, auxiliary-loss-free load balancing, multi-token prediction, and a training recipe that reportedly completed without irrecoverable loss spikes or rollbacks.",
+    "whyRelevant": "This is the upper bound the Training team should reason from. It shows which techniques matter at DeepSeek scale, but it also makes clear how much of that stack is only worth copying if Modal wants to go beyond the current 64-GPU-ish post-training golden path.",
+    "tags": ["frontier", "load-balancing", "model-report"]
+  },
+  {
+    "id": "kimi-k2-2025",
+    "title": "Kimi K2: Open Agentic Intelligence",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2507.20534",
+    "pdfPath": "/spikes/training-techniques-for-large-oss-moe-models-on-modal/assets/kimi-k2-open-agentic-intelligence.pdf",
+    "authors": ["Kimi Team"],
+    "publishedAt": "2025-07-28",
+    "summary": "Kimi K2 is a 1T-parameter MoE model with 32B active parameters and one of the most useful public writeups on training stability in the current OSS frontier. The report introduces MuonClip, describes 15.5T-token pretraining with zero loss spike, and pairs that with a serious agentic and RL-heavy post-training stack.",
+    "whyRelevant": "April planning explicitly pivots the team toward Kimi. This is the most relevant public source for what optimizer choice, stability work, and post-training look like in the exact model family the team wants to make work in Miles.",
+    "tags": ["optimizer", "agentic", "model-report"]
+  },
+  {
+    "id": "glm-4-5-2025",
+    "title": "GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2508.06471",
+    "pdfPath": "/spikes/training-techniques-for-large-oss-moe-models-on-modal/assets/glm-4-5-arc-foundation-models.pdf",
+    "authors": ["GLM-4.5 Team"],
+    "publishedAt": "2025-08-08",
+    "summary": "GLM-4.5 is a 355B-parameter MoE model with 32B activated parameters that documents a multi-stage training recipe over 23T tokens. The most useful detail for this spike is its post-training stack: expert model iteration, reinforcement learning, and a compact Air variant that keeps the same basic operating model.",
+    "whyRelevant": "The team already spent time on GLM before pivoting toward Kimi, so this is a good bridge source. It is both a realistic OSS MoE target and a direct reference for the kind of post-training-heavy stack the team wants to productize.",
+    "tags": ["post-training", "rl", "model-report"]
+  },
+  {
+    "id": "megablocks-2022",
+    "title": "MegaBlocks: Efficient Sparse Training with Mixture-of-Experts",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2211.15841",
+    "pdfPath": "/spikes/training-techniques-for-large-oss-moe-models-on-modal/assets/megablocks-efficient-sparse-training.pdf",
+    "authors": ["Trevor Gale", "Deepak Narayanan", "Cliff Young", "Matei Zaharia"],
+    "publishedAt": "2022-11-29",
+    "summary": "MegaBlocks is still one of the clearest explanations of why large MoE training becomes a kernel problem. Its core contribution is dropless sparse execution via block-sparse kernels, avoiding the usual choice between token dropping and heavy padding while improving end-to-end throughput.",
+    "whyRelevant": "This is not the newest source in the set, but it remains the right mental model for evaluating whether the team needs grouped kernels, dropless routing, or other sparse execution work under Miles and Megatron-compatible backends.",
+    "tags": ["kernels", "dropless", "sparse-training"]
+  },
+  {
+    "id": "megatron-core-moe-docs",
+    "title": "Mixture of Experts — Megatron Core",
+    "kind": "docs",
+    "canonicalUrl": "https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/moe.html",
+    "authors": ["NVIDIA"],
+    "summary": "Megatron Core MoE is the closest thing to a current implementation checklist for serious large-scale MoE training. The docs cover expert parallelism with tensor, data, context, and pipeline parallelism, along with DeepEP-backed dispatch, grouped GEMM, FP8, upcycling, communication overlap, and model-zoo configs for current open MoE families.",
+    "whyRelevant": "Even if the team keeps Miles as the user-facing framework, this doc shows what the backend stack must expose if Modal wants efficient full-parameter or lightly-adapted MoE training. It is especially useful because it already names DeepSeek and Qwen-class configurations explicitly.",
+    "tags": ["implementation", "parallelism", "fp8"]
+  },
+  {
+    "id": "deepep",
+    "title": "DeepEP",
+    "kind": "docs",
+    "canonicalUrl": "https://github.com/deepseek-ai/DeepEP",
+    "authors": ["DeepSeek-AI"],
+    "summary": "DeepEP is an expert-parallel communication library for MoE dispatch and combine, with separate high-throughput and low-latency paths plus support for FP8 traffic. The public repo is useful because it makes the communication problem concrete rather than treating expert parallelism as a black box inside a framework.",
+    "whyRelevant": "This is the communication layer the team should care about most if large MoE support is blocking customer work. It maps directly onto the Notion priorities around RDMA, disaggregation, and making multi-node MoE runs cheap enough to become a repeatable Modal product path.",
+    "tags": ["expert-parallel", "rdma", "communication"]
+  }
+]

@@ -1,0 +1,64 @@
+---
+title: Multi-tenant LoRA for RL
+summary: "How shared-base, many-adapter systems line up with the Training team\u2019\
+  s current Miles/Tinker direction, and where multi-LoRA orchestration becomes the\
+  \ real bottleneck for RL."
+theme: The Training team wants RLVR on Modal to feel repeatable, which makes shared-backbone,
+  many-adapter orchestration more important than generic adapter efficiency alone.
+whyItMatters: The Training charter explicitly picks RLVR as the first wedge, and April
+  planning/Tinker both point toward LoRA-friendly post-training stacks. If the team
+  wants Miles-based runs, Tinker-style APIs, and non-Ray orchestration on Modal, it
+  needs a clear view of what multi-tenant LoRA serving and training already solve
+  versus what still has to be built.
+tags:
+- rl
+- lora
+- serving
+- multi-tenant
+updatedAt: '2026-04-18'
+sourceCount: 5
+---
+import SourceList from "../../../components/SourceList.astro";
+import sources from "./sources.json";
+
+## Overview
+
+The Training team’s docs make the framing here more specific than “LoRA is efficient.” The charter picks
+RLVR as the first repeatable training workload. April planning says Miles is the framework of choice because
+it has LoRA support and is friendlier to contributions, while Tinker asks for a Modal-native post-training
+shape with separate `forward_backward()`, `optim_step()`, and `sample()` phases, ideally without Ray. That
+combination turns multi-tenant LoRA into an orchestration problem, not just a parameter-efficiency trick.
+
+Multi-tenant LoRA serving started as an inference cost story: keep one base model resident, load many small
+adapters, and batch requests across them without exploding VRAM. For the team’s current RL direction, that
+same design becomes the backbone of a possible operating model: one base model, many policy variants, and a
+warm pool of workers keyed by `(base_model, rank)` or similar adapter-facing identities.
+
+The practical question is therefore not whether LoRA works. It is whether Modal can support many adapters at
+once without destroying batching efficiency, memory locality, or update cadence while still fitting the
+Miles/Tinker direction. That is why the best material here spans both papers and production serving notes.
+
+## Training team context
+
+- The charter narrows the team’s first wedge to **RLVR**, not generic training.
+- April planning chooses **Miles** because it has LoRA support and can plausibly absorb contributions.
+- Tinker’s draft API assumes **separated post-training phases** and a worker shape that looks much closer to
+  long-lived, parameterized LoRA workers than to ephemeral full-model jobs.
+- Tinker also calls out **SGLang coordination** and explicitly wants to avoid depending on Ray if possible.
+
+## Key themes
+
+- Multi-tenant LoRA is fundamentally about **sharing backbone memory while isolating adapter state**.
+- RL makes the problem harder because the number of active adapters can change quickly as policies evolve.
+- The team’s current direction makes **non-Ray orchestration** part of the LoRA problem, not a separate infra choice.
+- Serving systems win or lose on **batching across heterogeneous adapters**, not just adapter load/unload time.
+- For Modal specifically, warm-container policy, `(base_model, rank)` partitioning, and inference-engine coordination matter as much as the adapter math.
+
+## Suggested reading order
+
+1. Read **LoRA** for the base abstraction and why adapters are so cheap relative to the backbone.
+2. Read **Punica** and **S-LoRA** for the serving ideas most likely to transfer into a Tinker-style warm-pool design.
+3. Read the **AWS SageMaker** note to translate those papers into a practical operator-facing control plane.
+4. Read **tLoRA** last as a look at what happens once multi-LoRA stops being only a serving concern and starts shaping the training stack itself.
+
+<SourceList sources={sources} />

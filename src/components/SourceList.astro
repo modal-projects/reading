@@ -1,0 +1,32 @@
+---
+import SourceCard from "./SourceCard.astro";
+
+interface SourceRecord {
+  id: string;
+  title: string;
+  kind: string;
+  canonicalUrl: string;
+  pdfPath?: string;
+  authors?: string[];
+  publishedAt?: string;
+  summary: string;
+  whyRelevant: string;
+  tags?: string[];
+}
+
+interface Props {
+  sources: SourceRecord[];
+}
+
+const { sources } = Astro.props;
+---
+
+<section class="source-list">
+  <div class="section-heading">
+    <p class="eyebrow">Sources</p>
+    <h2>Annotated reading list</h2>
+  </div>
+  <div class="source-stack">
+    {sources.map((source) => <SourceCard source={source} />)}
+  </div>
+</section>

@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const spikes = (await getCollection("spikes")).sort(
+  (a, b) => b.data.updatedAt.getTime() - a.data.updatedAt.getTime()
+);
+---
+
+<BaseLayout title="Spikes">
+  <section class="section-block">
+    <div class="section-heading">
+      <p class="eyebrow">Catalog</p>
+      <h1>Spikes</h1>
+      <p class="hero-summary">
+        Stable reading pages generated in-repo and published as part of the static site build.
+      </p>
+    </div>
+    <div class="card-grid">
+      {spikes.map((entry) => (
+        <a class="spike-card" href={`/spikes/${entry.slug}/`}>
+          <p class="card-theme">{entry.data.theme}</p>
+          <h2>{entry.data.title}</h2>
+          <p>{entry.data.summary}</p>
+          <ul class="tag-list compact">
+            {entry.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+          <div class="card-footer">
+            <span>{entry.data.sourceCount} sources</span>
+            <span>{entry.data.updatedAt.toISOString().slice(0, 10)}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

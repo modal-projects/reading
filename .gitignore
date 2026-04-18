@@ -1,0 +1,9 @@
+.astro/
+.direnv/
+.npm-cache/
+.venv/
+__pycache__/
+dist/
+node_modules/
+result
+.DS_Store

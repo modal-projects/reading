@@ -1,0 +1,58 @@
+---
+interface SourceRecord {
+  id: string;
+  title: string;
+  kind: string;
+  canonicalUrl: string;
+  pdfPath?: string;
+  authors?: string[];
+  publishedAt?: string;
+  summary: string;
+  whyRelevant: string;
+  tags?: string[];
+}
+
+interface Props {
+  source: SourceRecord;
+}
+
+const { source } = Astro.props;
+---
+
+<article class="source-card" id={source.id}>
+  <div class="source-card-top">
+    <div>
+      <p class="source-kind">{source.kind}</p>
+      <h3><a href={source.canonicalUrl} target="_blank" rel="noreferrer">{source.title}</a></h3>
+    </div>
+    <div class="source-meta">
+      {source.publishedAt && <span>{source.publishedAt}</span>}
+      {source.authors && source.authors.length > 0 && <span>{source.authors.join(", ")}</span>}
+    </div>
+  </div>
+
+  <p>{source.summary}</p>
+
+  <div class="callout why">
+    <strong>Why this source matters</strong>
+    <p>{source.whyRelevant}</p>
+  </div>
+
+  {source.tags && source.tags.length > 0 && (
+    <ul class="tag-list compact">
+      {source.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  )}
+
+  <div class="source-links">
+    <a href={source.canonicalUrl} target="_blank" rel="noreferrer">Open source</a>
+    {source.pdfPath && <a href={source.pdfPath} target="_blank" rel="noreferrer">Open PDF</a>}
+  </div>
+
+  {source.pdfPath && (
+    <details class="pdf-frame">
+      <summary>Embedded PDF</summary>
+      <iframe src={source.pdfPath} title={`${source.title} PDF`} loading="lazy"></iframe>
+    </details>
+  )}
+</article>

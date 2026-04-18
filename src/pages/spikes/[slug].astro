@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from "astro:content";
+import SpikeHero from "../../components/SpikeHero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const spikes = await getCollection("spikes");
+  return spikes.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={`${entry.data.title} | Reading`} description={entry.data.summary}>
+  <SpikeHero
+    title={entry.data.title}
+    theme={entry.data.theme}
+    summary={entry.data.summary}
+    whyItMatters={entry.data.whyItMatters}
+    tags={entry.data.tags}
+    updatedAt={entry.data.updatedAt}
+  />
+  <article class="spike-body prose">
+    <Content />
+  </article>
+</BaseLayout>

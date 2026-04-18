@@ -1,0 +1,44 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const spikes = (await getCollection("spikes")).sort(
+  (a, b) => b.data.updatedAt.getTime() - a.data.updatedAt.getTime()
+);
+const featured = spikes.slice(0, 2);
+---
+
+<BaseLayout title="Reading">
+  <section class="landing-hero">
+    <p class="eyebrow">Reading spikes</p>
+    <h1>Curated notes and source lists for team-relevant topics.</h1>
+    <p class="hero-summary">
+      Codex can generate new spikes directly in this repo. Each spike is a short overview, an
+      annotated reading list, and local PDFs when they are worth mirroring.
+    </p>
+    <div class="hero-actions">
+      <a class="button primary" href="/spikes/">Browse spikes</a>
+      <a class="button" href="https://github.com/pawalt/reading">Repo</a>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="section-heading">
+      <p class="eyebrow">Latest</p>
+      <h2>Seed spikes</h2>
+    </div>
+    <div class="card-grid">
+      {featured.map((entry) => (
+        <a class="spike-card" href={`/spikes/${entry.slug}/`}>
+          <p class="card-theme">{entry.data.theme}</p>
+          <h3>{entry.data.title}</h3>
+          <p>{entry.data.summary}</p>
+          <div class="card-footer">
+            <span>{entry.data.sourceCount} sources</span>
+            <span>{entry.data.updatedAt.toISOString().slice(0, 10)}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

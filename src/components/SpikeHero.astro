@@ -1,0 +1,34 @@
+---
+interface Props {
+  title: string;
+  theme: string;
+  summary: string;
+  whyItMatters: string;
+  tags: string[];
+  updatedAt: Date;
+}
+
+const { title, theme, summary, whyItMatters, tags, updatedAt } = Astro.props;
+---
+
+<section class="spike-hero">
+  <p class="eyebrow">Spike</p>
+  <h1>{title}</h1>
+  <p class="hero-summary">{summary}</p>
+  <div class="hero-grid">
+    <div>
+      <h2>Theme</h2>
+      <p>{theme}</p>
+    </div>
+    <div>
+      <h2>Why it matters</h2>
+      <p>{whyItMatters}</p>
+    </div>
+  </div>
+  <div class="meta-row">
+    <span>Updated {updatedAt.toISOString().slice(0, 10)}</span>
+    <ul class="tag-list">
+      {tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  </div>
+</section>
