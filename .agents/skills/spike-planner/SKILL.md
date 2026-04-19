@@ -23,11 +23,13 @@ Turn a broad topic into a decision-ready spike brief that is clearly grounded in
    - the likely source categories,
    - what should be ignored.
 4. Run `uv run reading spike create "<topic>"` if the spike does not exist yet.
-5. Fill the spike frontmatter and the top sections of `index.mdx` before deep research starts. The `whyItMatters` frontmatter field should name a concrete Modal priority the spike maps onto.
+5. Resolve the signer: run `uv run python scripts/modal_identity.py` and capture the output (e.g. `alessio-modal-labs`). This goes into the spike frontmatter as `addedBy`.
+6. Fill the spike frontmatter and the top sections of `index.mdx` before deep research starts. The `whyItMatters` frontmatter field should name a concrete Modal priority the spike maps onto, and `addedBy` should be the signer from step 5.
 
 ## Rules
 
 - If the Notion MCP server is not configured or returns nothing for the topic, **pause and ask the user** for internal context before writing `whyItMatters`. Do not fall back to a generic industry claim.
+- If `scripts/modal_identity.py` fails, **pause and ask the user** to authenticate to the `modal-labs` workspace. Do not ship a spike without a real `addedBy`.
 - Keep the spike focused enough that 4-8 sources can cover it well.
 - Prefer a systems or implementation angle over a generic literature review.
 - Write the "why it matters" section in Modal-facing language (products, customers, platform constraints), not academic language.

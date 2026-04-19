@@ -6,7 +6,12 @@
     "canonicalUrl": "https://hao-ai-lab.github.io/blogs/distserve-retro/",
     "summary": "This retrospective explains why prefill-decode disaggregation moved from research novelty to production pattern. It is valuable because it does not just praise disaggregation; it also explains the scheduling, utilization, and systems constraints that determine when the split is worth it.",
     "whyRelevant": "This is the best architectural starting point for the spike. It matches the current bet that rollout inference should be disaggregated from training when the capacity model rewards specialization.",
-    "tags": ["architecture", "prefill-decode", "utilization"]
+    "tags": [
+      "architecture",
+      "prefill-decode",
+      "utilization"
+    ],
+    "addedBy": "alessio-modal-labs"
   },
   {
     "id": "pplx-disagg-prefill-2025",
@@ -15,7 +20,12 @@
     "canonicalUrl": "https://research.perplexity.ai/articles/disaggregated-prefill-and-decode",
     "summary": "Perplexity's article turns the abstract prefill/decode split into a transport problem: the system needs to move layer state and metadata between specialized instances efficiently enough that the split still wins. The details around layer transfer and notification make the communication boundary concrete.",
     "whyRelevant": "It grounds the spike in an actual production design. Even though the article focuses on KV/state transfer rather than weight deltas, it shows the exact serving boundary Modal will have to coordinate with SGLang in the Tinker workstream.",
-    "tags": ["production", "state-transfer", "serving"]
+    "tags": [
+      "production",
+      "state-transfer",
+      "serving"
+    ],
+    "addedBy": "alessio-modal-labs"
   },
   {
     "id": "pplx-weight-transfer-2025",
@@ -24,7 +34,12 @@
     "canonicalUrl": "https://research.perplexity.ai/articles/weight-transfer-for-rl-post-training-in-under-2-seconds",
     "summary": "This is the most concrete public writeup in the set for the RL side of disaggregation. It explains how a training cluster and an inference cluster stay synchronized using point-to-point RDMA writes, pipelined task stages, and a static transfer schedule, bringing trillion-parameter updates down to roughly 1.3 seconds.",
     "whyRelevant": "If the question is 'what actually makes Modal's disaggregated rollout inference plan plausible?', this is the clearest operational answer. It is also the closest public analogue to the Perplexity-style ask Modal is chasing.",
-    "tags": ["weight-sync", "rdma", "rl"]
+    "tags": [
+      "weight-sync",
+      "rdma",
+      "rl"
+    ],
+    "addedBy": "alessio-modal-labs"
   },
   {
     "id": "pplx-transferengine-2025",
@@ -33,7 +48,12 @@
     "canonicalUrl": "https://research.perplexity.ai/articles/rdma-point-to-point-communication-for-llm-systems",
     "summary": "Perplexity generalizes the transport ideas behind its serving and RL systems into TransferEngine, a point-to-point RDMA communication layer. The article is especially useful because it places weight transfer and disaggregated inference in the same design family rather than treating them as separate optimization problems.",
     "whyRelevant": "This source ties the spike together. It shows that once systems move beyond collectives, the same point-to-point substrate can serve KV transfer, MoE routing, and fast weight synchronization, which is exactly the kind of reusable foundation Modal needs for native examples.",
-    "tags": ["transport", "rdma", "systems"]
+    "tags": [
+      "transport",
+      "rdma",
+      "systems"
+    ],
+    "addedBy": "alessio-modal-labs"
   },
   {
     "id": "prfaas-2026",
@@ -41,11 +61,26 @@
     "kind": "paper",
     "canonicalUrl": "https://arxiv.org/abs/2604.15039",
     "pdfPath": "/spikes/disaggregated-inference-delta-compression/assets/prfaas-cross-dc-prefill.pdf",
-    "authors": ["Ruoyu Qin", "Weiran He", "Yaoyu Wang", "Zheming Li", "Xinran Xu", "Yongwei Wu", "Weimin Zheng", "Mingxing Zhang"],
+    "authors": [
+      "Ruoyu Qin",
+      "Weiran He",
+      "Yaoyu Wang",
+      "Zheming Li",
+      "Xinran Xu",
+      "Yongwei Wu",
+      "Weimin Zheng",
+      "Mingxing Zhang"
+    ],
     "publishedAt": "2026-04-16",
     "summary": "PrfaaS pushes prefill-decode disaggregation past a single RDMA fabric. Hybrid-attention models shrink KVCache enough that long-context prefill can run in a standalone, compute-dense cluster and ship KV over commodity Ethernet to local decode clusters. The paper argues that smaller KV alone is not enough: bursty load, skewed request lengths, uneven prefix caches, and fluctuating inter-cluster bandwidth force you to combine selective offloading, bandwidth-aware scheduling, and cache-aware request placement. On an internal 1T-parameter hybrid model, the heterogeneous setup beats homogeneous PD and naive offloading by 54% and 32% throughput.",
     "whyRelevant": "This is the most direct test of how far PD disaggregation can go in a Modal-shaped world, where prefill and decode capacity may not live behind the same low-latency fabric. It turns Modal's rollout-inference bet into a concrete scheduling and placement problem: which prefills are worth shipping across clusters, and how do you keep queueing stable when bandwidth is the variable instead of KVCache size?",
-    "tags": ["prefill-decode", "kvcache", "cross-datacenter", "scheduling"]
+    "tags": [
+      "prefill-decode",
+      "kvcache",
+      "cross-datacenter",
+      "scheduling"
+    ],
+    "addedBy": "alessio-modal-labs"
   },
   {
     "id": "pulse-2026",
@@ -53,10 +88,24 @@
     "kind": "paper",
     "canonicalUrl": "https://arxiv.org/abs/2602.03839",
     "pdfPath": "/spikes/disaggregated-inference-delta-compression/assets/pulse-weight-update-sparsity.pdf",
-    "authors": ["Erfan Miahi", "Ethan Brown", "Nicholas Ozog", "Riley Hunnefield", "Brandon Barker", "Daniel Balsam", "Shawn Crawford", "Alyse Stanley"],
+    "authors": [
+      "Erfan Miahi",
+      "Ethan Brown",
+      "Nicholas Ozog",
+      "Riley Hunnefield",
+      "Brandon Barker",
+      "Daniel Balsam",
+      "Shawn Crawford",
+      "Alyse Stanley"
+    ],
     "publishedAt": "2026-02-06",
     "summary": "PULSE is the strongest public paper in the set for the actual delta-compression angle. It argues that RL fine-tuning updates are extremely sparse and that lossless sparse patch encoding can reduce synchronization bandwidth by roughly two orders of magnitude without changing training dynamics.",
     "whyRelevant": "This is the source that most directly answers the spike title. It turns 'delta compression for weight updates' from a vague systems instinct into a concrete communication strategy with measured bandwidth savings, which is why it maps cleanly onto the planned multinode guide work.",
-    "tags": ["delta-compression", "sparsity", "weight-sync"]
+    "tags": [
+      "delta-compression",
+      "sparsity",
+      "weight-sync"
+    ],
+    "addedBy": "alessio-modal-labs"
   }
 ]

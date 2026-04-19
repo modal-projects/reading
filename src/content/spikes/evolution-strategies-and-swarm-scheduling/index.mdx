@@ -1,0 +1,93 @@
+---
+title: Evolution strategies and swarm scheduling
+summary: "Population-based search shows up in three different Modal surfaces \u2014\
+  \ training, hyperparameter tuning, and autoscaling. This spike follows that single\
+  \ primitive across all three, using EGGROLL as the reason to take ES seriously again."
+theme: "Population-based search is a single primitive that shows up three times in\
+  \ Modal-shaped work \u2014 evolving model weights, evolving hyperparameter schedules,\
+  \ and evolving which worker serves which request. In each case the unlock is the\
+  \ same cheap, elastic pool of ephemeral compute."
+whyItMatters: "Modal's RL story today is GRPO-shaped, Modal's hyperparameter-tuning\
+  \ story is \"launch a grid, paid by the container\", and Modal's scheduler/autoscaler\
+  \ owns placement across a shifting fleet. EGGROLL makes ES a credible alternative\
+  \ to GRPO without needing a tight weight-sync fabric; PBT is the natural next step\
+  \ for massively parallel hyperparameter tuning; and the honey-bee scheduler is a\
+  \ decent mental model for decentralized allocation in Flash-shaped deployments.\
+  \ All three of these push on the same platform primitive \u2014 large, cheap, elastic\
+  \ batched workers \u2014 rather than asking for something new."
+tags:
+- evolution-strategies
+- hyperparameter-tuning
+- scheduling
+- rl
+updatedAt: '2026-04-19'
+sourceCount: 4
+addedBy: alessio-modal-labs
+---
+import SourceList from "../../../components/SourceList.astro";
+import sources from "./sources.json";
+
+## Overview
+
+This spike is narrower than a general tour of evolutionary algorithms. The question it tries to answer
+is: **where does population-based search actually pay off for Modal right now, and what does the
+platform need to provide to make it cheap?** The same primitive — sample a population of perturbed
+candidates, score them cheaply in parallel, move the parent toward the good ones — keeps showing up
+on three very different surfaces:
+
+- **Training.** EGGROLL turns evolution strategies into something that behaves like batched LoRA
+  inference, reaches ~100x the throughput of naive ES at billion-parameter scale, and hits or beats
+  GRPO on RWKV-7 reasoning tasks.
+- **Hyperparameter tuning.** PBT treats a fleet of concurrent training runs as a population and
+  evolves both weights and hyperparameters inside the same job budget.
+- **Scheduling.** The honey-bee model treats servers as workers advertising recent reward
+  (dancelets) and lets them re-specialize without a central coordinator.
+
+The interesting thing is not that these algorithms exist. It is that they all have the same shape,
+and that shape fits Modal's existing platform primitives more cleanly than most of the systems they
+compete with.
+
+## Modal context
+
+- The current RL-on-Modal story is GRPO-shaped (TRL, verl, the GRPO tutorial). EGGROLL is the first
+  credible pitch that something very different on the algorithm side can ride the same substrate
+  without asking for low-latency weight sync.
+- The existing **massively parallel hyperparameter tuning** example is already the right shape for
+  PBT; the upgrade is mostly in exploit/explore bookkeeping and shared checkpoints, not in core
+  platform capability.
+- **Modal Flash 0→1 autoscaling** and the scheduler's slot allocation face a decentralized
+  assignment problem under shifting, heterogeneous demand. The honey-bee algorithm does not drop in,
+  but it is a cleaner baseline to argue against than another ad-hoc heuristic.
+
+## Key themes
+
+- Population-based search wins on platforms where **inference is cheap and elastic**, not where
+  individual gradient steps are cheap. That describes Modal more than it describes most training
+  clusters.
+- The modern ES comeback is not "no gradients", it is **"gradient-like updates over a batched
+  inference forward pass"**. EGGROLL's rank-r perturbations make this explicit.
+- PBT blurs the line between hyperparameter search and training: the schedules it discovers
+  (learning rate, entropy coefficient) matter more than the static configs grid sweeps find.
+- Swarm / nature-inspired scheduling is most useful as a **framing**, not as a drop-in algorithm —
+  it forces a clear separation between the local signal each worker sees and the global property
+  (load balance, revenue, throughput) the fleet is supposed to produce.
+- Across all three, the thing that gets cheaper is **population size**, not per-member quality. The
+  platform question is how cheaply Modal can run N-way parallel inference with occasional
+  synchronization, not how fast a single worker runs.
+
+## Suggested reading order
+
+1. Start with **Lil'Log: Evolution Strategies** for vocabulary — simple Gaussian ES, CMA-ES, NES,
+   OpenAI ES, and PBT all live in one post, which is what makes the rest of the reading list
+   legible.
+2. Read **Evolution Strategies at the Hyperscale (EGGROLL)** for the concrete reason this is
+   worth looking at now: rank-r perturbations, batched-inference throughput, and the head-to-head
+   with GRPO on RWKV-7.
+3. Read **Population Based Training of Neural Networks** for the hyperparameter-tuning side. It is
+   the cleanest public description of "treat a training fleet as a population" and is the natural
+   follow-up to Modal's existing hyperparameter-tuning example.
+4. Finish with **A Honey Bee Algorithm for Internet Server Colony Optimization** to flip the
+   framing from "evolve models" to "evolve allocations", and evaluate how much of its framing
+   maps onto Flash-shaped decentralized autoscaling.
+
+<SourceList sources={sources} />

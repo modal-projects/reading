@@ -1,0 +1,75 @@
+[
+  {
+    "id": "lilweng-es-2019",
+    "title": "Evolution Strategies",
+    "kind": "blog",
+    "canonicalUrl": "https://lilianweng.github.io/posts/2019-09-05-evolution-strategies/",
+    "authors": ["Lilian Weng"],
+    "publishedAt": "2019-09-05",
+    "summary": "A compact tour of evolution strategies as a black-box optimizer: simple Gaussian ES, CMA-ES, natural evolution strategies, OpenAI's ES for RL, and population-based training (PBT) for hyperparameter search. The post makes the family structure explicit and shows why parallelism is the real reason ES keeps resurfacing in deep learning, not raw sample efficiency.",
+    "whyRelevant": "This is the common vocabulary layer for the rest of the spike. It connects the training thread (OpenAI ES, EGGROLL) to the hyperparameter thread (PBT) in the same framing, so the reader sees population-based search as one primitive rather than three separate tricks. It also surfaces CMA-ES, which is the most realistic drop-in for existing Modal hyperparameter-sweep examples.",
+    "tags": ["evolution-strategies", "tutorial", "pbt", "cma-es"],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "eggroll-2026",
+    "title": "Evolution Strategies at the Hyperscale",
+    "kind": "paper",
+    "canonicalUrl": "https://eshyperscale.github.io",
+    "pdfPath": "/spikes/evolution-strategies-and-swarm-scheduling/assets/eggroll-2026.pdf",
+    "authors": [
+      "Bidipta Sarkar",
+      "Mattie Fellows",
+      "Juan Agustin Duque",
+      "Alexander David Goldie",
+      "Aaron Courville",
+      "Karin Sevegnani",
+      "Shimon Whiteson",
+      "Jakob Nicolaus Foerster"
+    ],
+    "publishedAt": "2026-11-20",
+    "summary": "EGGROLL replaces naive ES's batched matmul with rank-r perturbations, turning ES into something that behaves like batched LoRA inference. That single change buys ~100x training throughput on billion-parameter models and lands ES within 10% of pure inference throughput. The paper shows EGGROLL matches or beats GRPO on countdown and GSM8K with RWKV-7 1.5B/7B, and uses the same loop to pretrain a pure-int8 nonlinear RNN at population size 2^20 on a single H100.",
+    "whyRelevant": "This is the concrete reason to take ES seriously as a training primitive on Modal right now. Modal's RL story today is GRPO-shaped (TRL, verl, the GRPO on Modal tutorial); EGGROLL is the first credible pitch that a population-of-inference-workers loop can hit comparable reasoning quality without needing a tight training/inference weight-sync fabric. It reframes the platform ask from 'fast RDMA weight transfer' to 'cheap, elastic batched inference fleets' — which is exactly what Modal already sells.",
+    "tags": ["evolution-strategies", "rl", "llm", "training", "post-training"],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "pbt-2017",
+    "title": "Population Based Training of Neural Networks",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/1711.09846",
+    "pdfPath": "/spikes/evolution-strategies-and-swarm-scheduling/assets/pbt-2017.pdf",
+    "authors": [
+      "Max Jaderberg",
+      "Valentin Dalibard",
+      "Simon Osindero",
+      "Wojciech M. Czarnecki",
+      "Jeff Donahue",
+      "Ali Razavi",
+      "Oriol Vinyals",
+      "Tim Green",
+      "Iain Dunning",
+      "Karen Simonyan",
+      "Chrisantha Fernando",
+      "Koray Kavukcuoglu"
+    ],
+    "publishedAt": "2017-11-27",
+    "summary": "PBT runs many training jobs in parallel, periodically 'exploits' (copies weights and hyperparameters from better performers) and 'explores' (perturbs those hyperparameters), so hyperparameter search and model training share the same compute pool. It learns schedules, not single points: the hyperparameters co-adapt to the model state over time instead of being fixed up front.",
+    "whyRelevant": "Modal already has a massively parallel hyperparameter tuning example as a flagship pattern. PBT is the natural upgrade path from naive random/grid sweeps and is a closer fit for modern post-training than CMA-ES alone, because it optimizes schedules (learning rate, entropy coefficient, clipping thresholds) rather than static configs. It is also the cleanest bridge between the hyperparameter-tuning thread of this spike and the training thread: PBT is ES over hyperparameters while standard training happens inside each member.",
+    "tags": ["hyperparameter-tuning", "population-based", "training", "schedules"],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "bee-load-balancing-2004",
+    "title": "A Honey Bee Algorithm for Internet Server Colony Optimization: Dancelets as Dynamic Load Balancing Mechanism",
+    "kind": "paper",
+    "canonicalUrl": "https://www2.isye.gatech.edu/~ctovey/publications/papers/bee.oct19.2004.masi2.pdf",
+    "pdfPath": "/spikes/evolution-strategies-and-swarm-scheduling/assets/honey-bee-load-balancing-2004.pdf",
+    "authors": ["Sunil Nakrani", "Craig Tovey"],
+    "publishedAt": "2004-10-19",
+    "summary": "Nakrani and Tovey model an internet hosting colony as a beehive: each request type is a flower patch, each server is a bee that can re-specialize, and 'dancelets' (short advertisements of recent reward per unit time) are the only signal servers use to decide whether to keep serving their current type or switch. This purely local, decentralized rule produces competitive revenue and load balancing under bursty, heterogeneous demand — no central coordinator, no global queue state.",
+    "whyRelevant": "The framing maps uncomfortably well onto the problems Modal's scheduler and 0→1 autoscaler already face: decentralized assignment of heterogeneous work (different apps / function shapes) across a shifting pool of workers, without a single chokepoint dictating placement. It is not a drop-in algorithm for Modal Flash, but it is a cleaner mental model than ad-hoc heuristics for how local dance-like signals (recent reward per slot, recent utilization) could steer re-specialization across a fleet. Worth reading as a baseline before we invent another scheduler heuristic.",
+    "tags": ["scheduling", "load-balancing", "swarm", "autoscaling"],
+    "addedBy": "alessio-modal-labs"
+  }
+]

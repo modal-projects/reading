@@ -207,6 +207,24 @@ li {
   font-size: 0.85rem;
 }
 
+.signature {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.signature code {
+  background: var(--accent-tint);
+  border-radius: 4px;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.82rem;
+  padding: 1px 6px;
+}
+
+.source-links .signature {
+  margin-left: auto;
+}
+
 .hero-grid {
   display: grid;
   gap: 14px;

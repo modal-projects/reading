@@ -10,6 +10,7 @@ interface SourceRecord {
   summary: string;
   whyRelevant: string;
   tags?: string[];
+  addedBy?: string;
 }
 
 interface Props {
@@ -47,6 +48,9 @@ const { source } = Astro.props;
   <div class="source-links">
     <a href={source.canonicalUrl} target="_blank" rel="noreferrer">Open source</a>
     {source.pdfPath && <a href={source.pdfPath} target="_blank" rel="noreferrer">Open PDF</a>}
+    {source.addedBy && (
+      <span class="signature">Added by <code>@{source.addedBy}</code></span>
+    )}
   </div>
 
   {source.pdfPath && (

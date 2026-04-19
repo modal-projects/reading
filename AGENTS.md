@@ -22,6 +22,14 @@ This repository is an agent-native workspace for researching and publishing read
 - Mirror canonical PDFs into `public/spikes/<slug>/assets/` when possible.
 - Keep spike URLs stable. Refresh existing spikes in place instead of creating duplicate topics.
 
+## Signing
+
+- Every spike and every source entry carries an `addedBy` field with the Modal username (e.g. `alessio-modal-labs`) of the person who curated it. This is the same handle that shows up in `modal app history`.
+- Resolve the signer with `uv run python scripts/modal_identity.py`. Use its output verbatim; never guess a handle.
+- Set `addedBy` on the spike frontmatter when creating a new spike, and on each new entry in `sources.json` when adding sources.
+- Do not modify existing `addedBy` values. If you refresh someone else's spike or source, leave their signature in place.
+- If `scripts/modal_identity.py` fails, pause and ask the user to authenticate to the `modal-labs` workspace before writing anything that would need a signature.
+
 ## Topic selection
 
 - Favor topics that help Modal engineers and customers reason about the systems they build on or around, with an emphasis on training, inference, and platform infrastructure.
@@ -39,5 +47,5 @@ This repository is an agent-native workspace for researching and publishing read
 
 - Run `uv run reading site validate` before building.
 - Run `npm run build` before deploying (optional smoke test; the Modal image rebuilds from scratch on deploy).
-- Deploy with `uv run modal deploy modal_app.py`. This publishes to the `reading-site` app in the `modal-labs` workspace and serves at `https://modal-labs--reading.modal.run`.
+- Deploy with `uv run modal deploy modal_app.py`. This publishes to the `reading-site` app in the `modal-labs` workspace and serves at `https://modal-labs--read.modal.run`.
 - Deploys from a different Modal workspace will fork a new parallel deployment at a different URL rather than updating the shared site. Always confirm the active profile first.

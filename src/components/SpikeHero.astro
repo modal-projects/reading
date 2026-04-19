@@ -6,9 +6,10 @@ interface Props {
   whyItMatters: string;
   tags: string[];
   updatedAt: Date;
+  addedBy?: string;
 }
 
-const { title, theme, summary, whyItMatters, tags, updatedAt } = Astro.props;
+const { title, theme, summary, whyItMatters, tags, updatedAt, addedBy } = Astro.props;
 ---
 
 <section class="spike-hero">
@@ -27,6 +28,9 @@ const { title, theme, summary, whyItMatters, tags, updatedAt } = Astro.props;
   </div>
   <div class="meta-row">
     <span>Updated {updatedAt.toISOString().slice(0, 10)}</span>
+    {addedBy && (
+      <span class="signature">Curated by <code>@{addedBy}</code></span>
+    )}
     <ul class="tag-list">
       {tags.map((tag) => <li>{tag}</li>)}
     </ul>

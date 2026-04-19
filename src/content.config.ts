@@ -10,6 +10,7 @@ const spikes = defineCollection({
     tags: z.array(z.string()),
     updatedAt: z.coerce.date(),
     sourceCount: z.number().int().nonnegative(),
+    addedBy: z.string().optional(),
   }),
 });
 

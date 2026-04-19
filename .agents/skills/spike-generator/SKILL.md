@@ -18,7 +18,8 @@ Turn the planned topic and researched sources into a clean spike page whose narr
    - **key themes** — 3 to 5 bullets that name the real tradeoffs, not a list of topics,
    - **suggested reading order** — opinionated, tied to what the reader should take away.
 4. Keep the page narrative short and let `SourceList` carry the detailed annotations.
-5. Run `uv run reading spike refresh <slug>` after editing so `updatedAt` and `sourceCount` are correct.
+5. Verify signatures: every entry in `sources.json` should carry an `addedBy` (the Modal user who curated it). If a new entry is missing one, run `uv run python scripts/modal_identity.py` and set it before publishing. Never overwrite someone else's `addedBy`.
+6. Run `uv run reading spike refresh <slug>` after editing so `updatedAt` and `sourceCount` are correct.
 
 ## Rules
 

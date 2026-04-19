@@ -29,7 +29,8 @@ image = (
             "result",
         ],
     )
-    .run_commands("cd /app && npm ci", "cd /app && npm run build")
+    .run_commands("cd /app && npm ci")
+    .run_commands("cd /app && npm run build", force_build=True)
 )
 
 web_app = fastapi.FastAPI()
@@ -37,7 +38,7 @@ web_app = fastapi.FastAPI()
 
 @app.function(image=image, scaledown_window=1800)
 @modal.concurrent(max_inputs=100)
-@modal.asgi_app(label="reading")
+@modal.asgi_app(label="read")
 def serve():
     web_app.mount("/", fastapi.staticfiles.StaticFiles(directory="/app/dist", html=True))
     return web_app

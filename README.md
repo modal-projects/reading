@@ -1,6 +1,6 @@
 # Reading
 
-An agent-native reading site. Spikes are short, opinionated notes on systems topics with an annotated reading list. Live at [modal-labs--reading.modal.run](https://modal-labs--reading.modal.run).
+An agent-native reading site. Spikes are short, opinionated notes on systems topics with an annotated reading list. Live at [modal-labs--read.modal.run](https://modal-labs--read.modal.run).
 
 ## Setup
 
@@ -19,6 +19,8 @@ The repo ships four skills under `.agents/skills/` that an agent will read and f
 - **`spike-researcher`** — picks 4–8 sources, mirrors PDFs into `public/spikes/<slug>/assets/`, and writes `sources.json` with `whyRelevant` annotations grounded in Notion context.
 - **`spike-generator`** — writes the MDX overview, key themes, and opinionated reading order, then runs `reading spike refresh` to keep metadata honest.
 - **`site-steward`** — validates, builds, checks `modal profile current` returns `modal-labs`, and deploys. Refuses to deploy from the wrong workspace.
+
+Every spike and source is signed with the Modal username (e.g. `alessio-modal-labs`) of the person who curated it — the same handle `modal app history` shows. Agents resolve the signer with `uv run python scripts/modal_identity.py` and write it into `addedBy`. The site renders it as "Curated by @username" on spikes and "Added by @username" on each source card.
 
 ## Add a paper
 
@@ -68,7 +70,7 @@ npm run build                           # local build smoke test
 npm run dev                             # local preview at http://localhost:4321
 
 modal profile activate modal-labs       # shared deployment workspace
-uv run modal deploy modal_app.py        # publish to modal-labs--reading.modal.run
+uv run modal deploy modal_app.py        # publish to modal-labs--read.modal.run
 ```
 
 ## Structure
