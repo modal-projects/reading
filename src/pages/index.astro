@@ -19,7 +19,7 @@ const featured = spikes.slice(0, 2);
     </p>
     <div class="hero-actions">
       <a class="button primary" href="/spikes/">Browse spikes</a>
-      <a class="button" href="https://github.com/modal-projects/reading" target="_blank" rel="noreferrer">View on GitHub</a>
+      <a class="button" href="https://github.com/modal-projects/reading#add-a-paper" target="_blank" rel="noreferrer">Add a paper</a>
     </div>
   </section>
 
@@ -31,7 +31,6 @@ const featured = spikes.slice(0, 2);
     <div class="card-grid">
       {featured.map((entry) => (
         <a class="spike-card" href={`/spikes/${entry.slug}/`}>
-          <p class="card-theme">{entry.data.theme}</p>
           <h3>{entry.data.title}</h3>
           <p>{entry.data.summary}</p>
           <div class="card-footer">

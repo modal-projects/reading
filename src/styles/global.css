@@ -99,12 +99,11 @@ a {
 }
 
 .eyebrow,
-.source-kind,
-.card-theme {
-  color: var(--accent);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+.source-kind {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   margin: 0 0 10px;
   text-transform: uppercase;
 }

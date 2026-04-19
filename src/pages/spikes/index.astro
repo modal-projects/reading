@@ -20,7 +20,6 @@ const spikes = (await getCollection("spikes")).sort(
     <div class="card-grid">
       {spikes.map((entry) => (
         <a class="spike-card" href={`/spikes/${entry.slug}/`}>
-          <p class="card-theme">{entry.data.theme}</p>
           <h2>{entry.data.title}</h2>
           <p>{entry.data.summary}</p>
           <ul class="tag-list compact">
