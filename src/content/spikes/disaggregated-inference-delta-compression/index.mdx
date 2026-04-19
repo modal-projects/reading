@@ -1,16 +1,15 @@
 ---
 title: Disaggregated inference with delta compression
-summary: "Why the Training team\u2019s disaggregated rollout inference bet depends\
-  \ on fast weight sync, and how delta compression fits the specific Perplexity/Tinker/SGLang\
-  \ path in the team docs."
-theme: The team is not chasing disaggregation as a generic serving idea; it is chasing
-  an RL operating model where rollout pools, training pools, and inference engines
-  can move at different speeds without weight transfer becoming the bottleneck.
-whyItMatters: April planning explicitly calls out disaggregated rollout inference
-  as a major bet, with a goal of autoscaling RL inference on Modal and a concrete
-  ask to support Perplexity-style training plus Tinker. The relevant question is not
-  just whether disaggregation works, but whether Modal can make weight updates cheap
-  enough to keep SGLang-backed rollout pools in sync with training.
+summary: "Why Modal's disaggregated rollout inference bet depends on fast weight
+  sync, and how delta compression fits the Perplexity/Tinker/SGLang path."
+theme: Disaggregation is not a generic serving idea here; it is an RL operating
+  model where rollout pools, training pools, and inference engines can move at
+  different speeds without weight transfer becoming the bottleneck.
+whyItMatters: Modal wants an example of autoscaling RL inference with a concrete
+  path to support Perplexity-style training plus Tinker. The live question is
+  not just whether disaggregation works, but whether Modal can make weight
+  updates cheap enough to keep SGLang-backed rollout pools in sync with
+  training.
 tags:
 - disaggregation
 - inference
@@ -24,33 +23,35 @@ import sources from "./sources.json";
 
 ## Overview
 
-The Training docs make this spike narrower and more practical than a generic survey of disaggregated serving.
-April planning says the team wants an example of **autoscaling, disaggregated inference for RL**. The same
-plan also calls out a customer ask for **Modal-managed inference with training on Tinker**, with SGLang
-coordination named as the main learning target. The Monarch note pushes in the same direction, arguing that
-rollout and training separation is a good fit for Modal’s capacity model if weight movement can be made cheap.
+This spike is narrower than a generic survey of disaggregated serving. The concrete target is
+**autoscaling, disaggregated inference for RL** on Modal, with SGLang coordination as the main
+learning vehicle in the Perplexity/Tinker direction. Rollout and training separation is a good
+fit for Modal's capacity model if weight movement can be made cheap.
 
-Disaggregated serving first became popular because prefill and decode want different resources. RL post-training
-pushed the same architectural instinct further: keep rollout and training separate so each cluster can specialize.
-The catch is that specialization creates a synchronization boundary. If updated weights cannot move across that
-boundary cheaply, the architecture becomes unstable or too slow to matter.
+Disaggregated serving first became popular because prefill and decode want different resources.
+RL post-training pushed the same architectural instinct further: keep rollout and training
+separate so each cluster can specialize. The catch is that specialization creates a
+synchronization boundary. If updated weights cannot move across that boundary cheaply, the
+architecture becomes unstable or too slow to matter.
 
-That is why delta compression matters here. In the team docs it is not an abstract optimization; it is the
-difference between a nice architecture diagram and a practical Modal example. The most useful reading on this
-topic now comes from systems teams who had to make disaggregated training and inference work in production.
+That is why delta compression matters here. It is not an abstract optimization; it is the
+difference between a nice architecture diagram and a practical Modal example. The most useful
+reading on this topic comes from systems teams who had to make disaggregated training and
+inference work in production.
 
-## Training team context
+## Modal context
 
-- April planning says this operating model fits **Modal’s capacity model** and is worth chasing directly.
-- The team wants to publish an example of **delta-compressed weight updates** in the multinode training guide.
-- The Perplexity/Tinker item is explicitly described as a learning vehicle for **SGLang coordination**.
-- The Monarch note makes the same architectural bet from another angle: disaggregate the training cluster from
-  the rollout pool, then use better synchronization and orchestration to keep the split economical.
+- The operating model fits **Modal's capacity model** and is worth chasing directly.
+- A good artifact to publish is an example of **delta-compressed weight updates** in the
+  multinode training guide.
+- The Perplexity/Tinker item is a learning vehicle for **SGLang coordination**.
+- Disaggregating the training cluster from the rollout pool and using better synchronization
+  and orchestration is what keeps the split economical.
 
 ## Key themes
 
 - Disaggregation improves utilization only if **state transfer** stops being the dominant cost.
-- In the team’s case, the concrete target is not generic serving throughput but **RL rollout/training separation on Modal**.
+- The concrete target is not generic serving throughput but **RL rollout/training separation on Modal**.
 - Delta compression is attractive because RL updates are often structured and sparse relative to full weight snapshots.
 - The winning systems pair compression with **point-to-point transfer**, pipelining, and static scheduling.
 - The real operational question is not just speed, but whether weight sync can stay fast enough to avoid train-infer drift while keeping rollout pools warm and autoscalable.
@@ -58,9 +59,9 @@ topic now comes from systems teams who had to make disaggregated training and in
 
 ## Suggested reading order
 
-1. Start with **Disaggregated Inference: 18 Months Later** for the architectural frame the team is betting on.
+1. Start with **Disaggregated Inference: 18 Months Later** for the architectural frame.
 2. Read **Disaggregated Prefill and Decode** to understand the concrete serving split before adding RL-specific weight sync.
-3. Read **Weight Transfer for RL Post-Training in under 2 seconds** as the closest public analogue to the team’s Perplexity/Tinker workstream.
+3. Read **Weight Transfer for RL Post-Training in under 2 seconds** as the closest public analogue to the Perplexity/Tinker workstream.
 4. Read **RDMA Point-to-Point Communication for LLM Systems** for the transport layer ideas that make the previous step reusable.
 5. Read **Prefill-as-a-Service** to see how far PD disaggregation stretches once KVCache shrinks and prefill can ride commodity Ethernet across clusters.
 6. Finish with **PULSE** to evaluate whether sparse delta-style synchronization can be the next optimization once the basic disaggregated path is working.

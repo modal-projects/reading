@@ -6,7 +6,7 @@ interface Props {
 
 import "../styles/global.css";
 
-const { title, description = "Agent-native reading spikes for team research." } = Astro.props;
+const { title, description = "A reading room from Modal: curated notes and source lists for systems topics we think about." } = Astro.props;
 ---
 
 <!doctype html>
@@ -21,14 +21,22 @@ const { title, description = "Agent-native reading spikes for team research." } 
   <body>
     <div class="page-shell">
       <header class="site-header">
-        <a class="site-mark" href="/">Reading</a>
+        <a class="site-mark" href="/">
+          <img src="/modal-logo.svg" alt="Modal" />
+          <span>Reading</span>
+        </a>
         <nav class="site-nav">
           <a href="/spikes/">Spikes</a>
+          <a href="https://modal.com" target="_blank" rel="noreferrer">modal.com</a>
         </nav>
       </header>
       <main class="page-main">
         <slot />
       </main>
+      <footer class="site-footer">
+        <span>Reading spikes from <a href="https://modal.com" target="_blank" rel="noreferrer">Modal</a>.</span>
+        <span>Built with <a href="https://astro.build" target="_blank" rel="noreferrer">Astro</a>, deployed on Modal.</span>
+      </footer>
     </div>
   </body>
 </html>

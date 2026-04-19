@@ -8,7 +8,7 @@
     "authors": ["Edward J. Hu", "Yelong Shen", "Phillip Wallis", "Zeyuan Allen-Zhu", "Yuanzhi Li", "Shean Wang", "Lu Wang", "Weizhu Chen"],
     "publishedAt": "2021-06-18",
     "summary": "The original LoRA paper establishes the key abstraction: freeze the backbone, train low-rank updates, and recover most of the adaptation quality with a tiny parameter footprint. It is the reason multi-tenant adapter systems are even plausible.",
-    "whyRelevant": "This is the foundation for every later systems design in the spike. Without the memory and update footprint reduction from LoRA, the Miles/Tinker direction in the team docs would collapse back into full-model duplication instead of reusable post-training workers.",
+    "whyRelevant": "This is the foundation for every later systems design in the spike. Without the memory and update footprint reduction from LoRA, the Miles/Tinker direction would collapse back into full-model duplication instead of reusable post-training workers.",
     "tags": ["foundation", "adapters", "training"]
   },
   {
@@ -20,7 +20,7 @@
     "authors": ["Lequn Chen", "Alan Sun", "Zhengda Lu", "Zhenyu Zhang", "Arvind Krishnamurthy", "Luis Ceze"],
     "publishedAt": "2024-03-01",
     "summary": "Punica is the clearest statement of the first-generation multi-tenant LoRA serving problem: requests use different adapters, but the server still needs to batch them over one shared backbone. Its contribution is an execution model and kernel strategy that makes heterogeneous adapter batching fast enough to matter.",
-    "whyRelevant": "For the Training team, Punica is the first serious reference for what a `(base_model, adapter)` worker pool must accomplish if Tinker and Miles are going to support many policy variants without losing throughput.",
+    "whyRelevant": "Punica is the first serious reference for what a `(base_model, adapter)` worker pool must accomplish if Tinker and Miles are going to support many policy variants without losing throughput.",
     "tags": ["serving", "batching", "kernels"]
   },
   {
@@ -32,7 +32,7 @@
     "authors": ["Lequn Chen", "Liangsheng Yin", "Ningning Xie", "Yuxuan Wang", "Yiding Yu", "Kuan Liu", "Yao Fu", "Amin Alipourfard", "Xiangyao Yu", "Ion Stoica"],
     "publishedAt": "2023-11-06",
     "summary": "S-LoRA extends the multi-adapter story from 'multiple' to 'thousands', emphasizing unified paging, adapter placement, and kernels that preserve throughput under much higher concurrency. It is a good reference for what breaks after the simple multi-LoRA case starts working.",
-    "whyRelevant": "This is especially relevant to the team’s Tinker draft because it shows what happens after the first multi-LoRA prototype works: adapter paging, placement, and concurrency become product-shaping constraints rather than implementation details.",
+    "whyRelevant": "This is especially relevant to the Tinker draft because it shows what happens after the first multi-LoRA prototype works: adapter paging, placement, and concurrency become product-shaping constraints rather than implementation details.",
     "tags": ["scaling", "paging", "throughput"]
   },
   {
@@ -41,7 +41,7 @@
     "kind": "blog",
     "canonicalUrl": "https://aws.amazon.com/blogs/machine-learning/efficient-and-cost-effective-multi-tenant-lora-serving-with-amazon-sagemaker/",
     "summary": "AWS frames multi-tenant LoRA as a production hosting concern: one base model, unmerged adapters on demand, and a serving backend that incorporates Punica and S-LoRA style ideas. The post is useful because it translates academic serving mechanisms into an operator-facing deployment model.",
-    "whyRelevant": "This is the best source in the set for understanding how these papers become an actual managed product surface. That is useful for the team because the charter is explicitly about building a repeatable golden path, not just proving a benchmark.",
+    "whyRelevant": "This is the best source in the set for understanding how these papers become an actual managed product surface, which is exactly the surface Modal needs to support for a repeatable golden path rather than a one-off benchmark.",
     "tags": ["production", "managed-serving", "ops"]
   },
   {
@@ -53,7 +53,7 @@
     "authors": ["Jiaming Wang", "Rongyu Zhang", "Haohe Liu", "Shuai Wang", "Yingxia Shao", "Yinghan Shen"],
     "publishedAt": "2026-02-11",
     "summary": "tLoRA pushes the discussion from serving back into training, arguing that co-locating many heterogeneous LoRA adapters during training requires its own architecture rather than just recycling serving tricks. The paper is early, but it captures where many-adapter experimentation is heading.",
-    "whyRelevant": "This is the closest external source to the team’s current RLVR posture. It suggests that once Miles/Tinker-style post-training depends on many adapter variants, training-time multiplexing becomes a first-class systems problem instead of a niche follow-on.",
+    "whyRelevant": "This is the closest external source to Modal's current RLVR posture. It suggests that once Miles/Tinker-style post-training depends on many adapter variants, training-time multiplexing becomes a first-class systems problem instead of a niche follow-on.",
     "tags": ["training", "multi-adapter", "emerging"]
   }
 ]

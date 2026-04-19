@@ -8,24 +8,25 @@ const spikes = (await getCollection("spikes")).sort(
 const featured = spikes.slice(0, 2);
 ---
 
-<BaseLayout title="Reading">
+<BaseLayout title="Reading | Modal">
   <section class="landing-hero">
-    <p class="eyebrow">Reading spikes</p>
-    <h1>Curated notes and source lists for team-relevant topics.</h1>
+    <p class="eyebrow">Modal · reading</p>
+    <h1>A reading room for the systems we care about.</h1>
     <p class="hero-summary">
-      Codex can generate new spikes directly in this repo. Each spike is a short overview, an
-      annotated reading list, and local PDFs when they are worth mirroring.
+      Short, opinionated spikes on training, inference, and platform topics that come up at Modal.
+      Each one is a concise overview, an annotated reading list, and mirrored PDFs when they are
+      worth keeping close.
     </p>
     <div class="hero-actions">
       <a class="button primary" href="/spikes/">Browse spikes</a>
-      <a class="button" href="https://github.com/pawalt/reading">Repo</a>
+      <a class="button" href="https://github.com/modal-projects/reading" target="_blank" rel="noreferrer">View on GitHub</a>
     </div>
   </section>
 
   <section class="section-block">
     <div class="section-heading">
       <p class="eyebrow">Latest</p>
-      <h2>Seed spikes</h2>
+      <h2>Recent spikes</h2>
     </div>
     <div class="card-grid">
       {featured.map((entry) => (

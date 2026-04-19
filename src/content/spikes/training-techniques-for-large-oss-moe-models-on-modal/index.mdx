@@ -1,15 +1,15 @@
 ---
 title: Training techniques for large OSS MoE models on Modal
-summary: What the newest open MoE model reports imply for the Training team, and which
+summary: What the newest open MoE model reports imply for Modal, and which
   training techniques actually fit Modal's current golden path.
-theme: The right Modal strategy is not to reproduce DeepSeek-scale pretraining from
-  scratch. It is to combine existing OSS MoE checkpoints with efficient post-training
-  primitives such as LoRA, expert-parallel communication, FP8, grouped kernels, and
-  predictable multi-node infrastructure.
-whyItMatters: April planning says large MoE support is currently blocking work for
-  Surge and Decagon, first on GLM and then on Kimi. This spike narrows the question
-  to the specific MoE techniques that matter for that near-term goal and the platform
-  work Modal needs to make them cheap and repeatable.
+theme: The right Modal strategy is not to reproduce DeepSeek-scale pretraining
+  from scratch. It is to combine existing OSS MoE checkpoints with efficient
+  post-training primitives such as LoRA, expert-parallel communication, FP8,
+  grouped kernels, and predictable multi-node infrastructure.
+whyItMatters: Large MoE support is currently blocking customer work, first on
+  GLM and then on Kimi. This spike narrows the question to the specific MoE
+  techniques that matter for that near-term goal and the platform work Modal
+  needs to make them cheap and repeatable.
 tags:
 - moe
 - training
@@ -24,37 +24,40 @@ import sources from "./sources.json";
 
 ## Overview
 
-The Training team docs make this a much narrower question than "how do MoE models work?" The charter says
-the job is to build a repeatable training motion for customers near the team's golden path, not to support every
-exotic workload. April planning makes the immediate blocker explicit: large MoE support is blocking current work
-for Surge and Decagon, with the model focus moving from GLM to Kimi. That means the practical question is not
-"how did DeepSeek train V3 from scratch?" It is "which pieces of the latest OSS MoE stack are required if Modal
-wants large-model LoRA, SFT, and RL runs to feel boring?"
+The narrow question here is not "how do MoE models work?" The job is to build a repeatable
+training motion for customers near Modal's golden path, not to support every exotic workload.
+Right now, large MoE support is the blocker for current customer work, with the model focus
+moving from GLM to Kimi. That means the practical question is not "how did DeepSeek train V3
+from scratch?" It is "which pieces of the latest OSS MoE stack are required if Modal wants
+large-model LoRA, SFT, and RL runs to feel boring?"
 
-The newest open reports converge on a familiar set of answers. Frontier MoE models keep active parameters modest
-while letting total parameters grow. They lean heavily on stable routing and load balancing, aggressive precision
-choices, specialized expert kernels, and expert-parallel communication that is treated as a first-class systems
-problem. They also mix long pretraining with serious post-training, including reinforcement learning and agentic
-data generation.
+The newest open reports converge on a familiar set of answers. Frontier MoE models keep active
+parameters modest while letting total parameters grow. They lean heavily on stable routing and
+load balancing, aggressive precision choices, specialized expert kernels, and expert-parallel
+communication that is treated as a first-class systems problem. They also mix long pretraining
+with serious post-training, including reinforcement learning and agentic data generation.
 
-For Modal, not all of that should be copied literally. DeepSeek-V3 and Kimi K2 are useful because they show the
-outer envelope of current OSS MoE training. But the team's current wedge is closer to post-training existing OSS
-checkpoints on clusters around the 64-GPU shape, using Miles-friendly workflows and infrastructure that makes
-multi-node runs predictable. This spike focuses on the techniques that survive that translation.
+For Modal, not all of that should be copied literally. DeepSeek-V3 and Kimi K2 are useful
+because they show the outer envelope of current OSS MoE training. But the current wedge is
+closer to post-training existing OSS checkpoints on clusters around the 64-GPU shape, using
+Miles-friendly workflows and infrastructure that makes multi-node runs predictable. This spike
+focuses on the techniques that survive that translation.
 
-## Training team context
+## Context
 
-- April planning says **large MoE support is the blocker** for current customer work.
-- The charter optimizes for **repeatable golden-path training**, not a one-off trillion-token pretraining effort.
-- The current framework bet is **Miles**, with explicit pressure to support **GLM/Kimi-class models** and migrate
-  model paths toward more Megatron-compatible tooling.
-- The platform bottlenecks are already named in Notion: **predictable multi-node capacity, RDMA, and compute-colocated storage**.
+- **Large MoE support is the blocker** for current customer work.
+- The goal is **repeatable golden-path training**, not a one-off trillion-token pretraining
+  effort.
+- The current framework bet is **Miles**, with explicit pressure to support **GLM/Kimi-class
+  models** and migrate model paths toward more Megatron-compatible tooling.
+- The platform bottlenecks are well known: **predictable multi-node capacity, RDMA, and
+  compute-colocated storage**.
 
 ## Key themes
 
 - The frontier MoE reports all buy efficiency by keeping **active parameters modest** while total parameters scale up.
 - The techniques most likely to matter on Modal are **stable routing, FP8, grouped or dropless expert kernels, and fast expert-parallel communication**.
-- For the team's current goals, **post-training existing checkpoints** is much more aligned than reproducing 15T to 23T-token pretraining runs.
+- For the current goals, **post-training existing checkpoints** is much more aligned than reproducing 15T to 23T-token pretraining runs.
 - Modal's differentiator is not absolute cluster scale; it is making **64-GPU-ish MoE runs predictable, restartable, and storage-local**.
 - A credible golden path likely needs **Miles-level ergonomics** on top of **Megatron and DeepEP-class kernels and comms**.
 
@@ -65,12 +68,12 @@ multi-node runs predictable. This spike focuses on the techniques that survive t
 - Keep cluster shapes boring: fixed-size multi-node jobs, predictable gang scheduling or reservations, and region-local data. MoE training is more sensitive to scheduling jitter than ordinary dense fine-tuning.
 - Invest in **RDMA and colocated storage together**. Faster expert dispatch helps, but checkpointing and dataset reads still dominate if data and weights ride the public internet.
 - Default to stability-first choices from the current reports: **bias-based or auxiliary-loss-free balancing, careful optimizer selection, FP8 where supported, and frequent async checkpoints**.
-- Defer the wrong problems. Fully elastic clusters, mixed GPU types, and from-scratch 1T-scale pretraining are not the right first milestone for the Training team's current wedge.
+- Defer the wrong problems. Fully elastic clusters, mixed GPU types, and from-scratch 1T-scale pretraining are not the right first milestone for the current wedge.
 
 ## Suggested reading order
 
 1. Start with **DeepSeek-V3** for the clearest public example of frontier-scale open MoE training decisions.
-2. Read **Kimi K2** next because it is the closest public analogue to the model family the team is actively chasing.
+2. Read **Kimi K2** next because it is the closest public analogue to the model family being actively chased.
 3. Read **GLM-4.5** for a stronger view of the multi-stage post-training stack, especially expert model iteration and RL.
 4. Read **MegaBlocks** to understand why MoE training becomes a kernel problem as soon as routing gets dynamic.
 5. Read the **Megatron Core MoE** docs as an implementation checklist for the current production stack.
