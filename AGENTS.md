@@ -12,8 +12,11 @@ This repository is an agent-native workspace for researching and publishing read
 
 ## Spike authoring contract
 
-- If the user asks for a new spike, use the repo-local skills under `.agents/skills/`.
+- If the user asks for a new spike, use the repo-local skills under `.agents/skills/` (`spike-planner`, `spike-researcher`, `spike-generator`, `site-steward`).
 - Start by scaffolding the spike with `uv run reading spike create "<topic>"`.
+- **Ground framing in Modal internals via the Notion MCP server.** Before writing `whyItMatters`, the spike overview, or any `whyRelevant` entry, search Modal's Notion for the topic and adjacent terms. Pull planning docs, roadmap pages, design notes, and customer asks. Use that context to write the framing; do not fall back to generic industry claims.
+- If the Notion MCP server is not configured, pause and ask the user for internal context rather than inventing a Modal priority.
+- Never paste internal Notion content verbatim into published spike files. Translate it into public-safe framing that still names the concrete Modal priority.
 - Research on the open web using primary sources when possible.
 - Prefer papers, official docs, and strong engineering blogs over secondary summaries.
 - Mirror canonical PDFs into `public/spikes/<slug>/assets/` when possible.
@@ -23,8 +26,7 @@ This repository is an agent-native workspace for researching and publishing read
 
 - Favor topics that help Modal engineers and customers reason about the systems they build on or around, with an emphasis on training, inference, and platform infrastructure.
 - Prefer systems and implementation angles over generic literature reviews.
-- When a spike could be written generically or with concrete product context, choose the version that names the real tradeoff a reader will face.
-- If prior internal context (planning docs, design notes, customer asks) is available, use it to sharpen the framing rather than defaulting to an outsider's take.
+- When a spike could be written generically or with concrete product context, choose the version that names the real tradeoff a Modal reader will face.
 
 ## Content bar
 

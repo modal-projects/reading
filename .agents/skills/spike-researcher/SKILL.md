@@ -7,12 +7,12 @@ description: Research sources for a spike. Use when a spike needs papers, blogs,
 
 ## Goal
 
-Gather a compact, high-signal reading list for a spike and populate `sources.json`.
+Gather a compact, high-signal reading list for a spike and populate `sources.json` with `whyRelevant` annotations that connect each source back to a real Modal priority.
 
 ## Workflow
 
-1. Read the relevant Training team pages in Notion first and extract the internal frame for the topic.
-2. Prefer primary or official sources:
+1. **Pull internal context first via the Notion MCP server.** Search Modal's Notion for the spike topic, adjacent terms, and any customer or product names that show up in the planner's brief. Capture the internal framing — which problem Modal is solving, which customers care, which platform constraints matter — before reading external sources. This is what turns `whyRelevant` from a generic paragraph into a Modal-specific annotation.
+2. Prefer primary or official sources on the open web:
    - papers,
    - official docs,
    - engineering blogs from the team that built the system.
@@ -23,18 +23,18 @@ Gather a compact, high-signal reading list for a spike and populate `sources.jso
    - canonical URL,
    - authors if known,
    - publication date if known,
-   - concise summary,
-   - why it matters.
+   - a concise `summary` of what the source actually contains,
+   - a `whyRelevant` that ties the source to the Modal priority you found in step 1 (e.g. "this is the closest public analogue to the Perplexity/Tinker workstream" rather than "this is a good paper about X").
 5. Mirror canonical PDFs into `public/spikes/<slug>/assets/` when available.
 6. Update `src/content/spikes/<slug>/sources.json`.
 
 ## Rules
 
+- If the Notion MCP server is not configured or returns nothing for the topic, **pause and ask the user** for internal context. Do not invent a Modal priority, and do not silently fall back to a generic `whyRelevant`.
 - Do not use low-signal summary sites if the original source exists.
 - Use blogs to explain implementation tradeoffs, not as a substitute for papers.
 - If a source has no PDF, keep the link and skip the embed.
-- Use the Notion MCP server as the source of truth for team priorities, preferred terminology, and what the spike should optimize for.
-- When writing `whyRelevant`, connect the source back to the Training team’s active goals rather than keeping the annotation generic.
+- Do not paste internal Notion content into `summary` or `whyRelevant`. Translate it into public-safe framing that still names the concrete Modal priority.
 
 ## References
 
