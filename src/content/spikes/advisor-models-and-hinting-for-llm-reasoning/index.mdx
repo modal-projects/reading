@@ -1,0 +1,108 @@
+---
+title: Advisor models and hinting for LLM reasoning
+summary: How advisor/hint architectures split long-CoT reasoning across a cheap trainable
+  model and a frozen executor, and what RL design choices keep that training signal
+  from collapsing.
+theme: The useful unit of training for reasoning agents is increasingly the advisor
+  or hint distribution, not the executor. That reframes the RL problem from "grow
+  long CoT on one model" to "shape a small model's advice so that a frozen executor
+  produces the right long CoT."
+whyItMatters: Modal's training team is productionizing an RL harness for customers
+  like Surge and iterating on a Lovable advisor/executor workstream where the next
+  real milestone is "train advisor -> eval go up." Both depend on understanding which
+  RL recipes keep training signal alive against frozen executors, sparse rewards,
+  and long-CoT trajectories. This spike collects the recent papers that make the advisor/hint
+  training loop concrete and ties them back to the long-CoT RL dynamics that decide
+  whether any of it stabilizes.
+tags:
+- rl
+- advisor-executor
+- long-cot
+- hinting
+- reasoning
+updatedAt: '2026-04-20'
+sourceCount: 5
+addedBy: alessio-modal-labs
+---
+import SourceList from "../../../components/SourceList.astro";
+import sources from "./sources.json";
+
+## Overview
+
+The training team is in two places at once. On one side, the RL harness is being
+productionized for customers who want verifiable-reward post-training against
+their own evals. On the other, the Lovable workstream has a concrete
+advisor/executor loop where the next real step is to train a small advisor so
+that paired evals actually move. These two efforts converge on the same
+narrow question: **what does it take to make RL training signal survive once the
+executor is frozen, the reward is sparse, and the trajectories are long?**
+
+The answer emerging across recent work is that the useful unit of training is
+the advisor or hint distribution, not the executor. An advisor model is small,
+cheap to roll out, and can be trained with RL against a frozen frontier
+executor. Hints reshape the rollout distribution instead of the reward, which
+sidesteps the classic failure modes of long-CoT RL - length runaway, advantage
+collapse, reward hacking - while keeping the terminal verifier honest.
+
+The Yeo et al. paper sets the stage: long CoT emerges from RL, but only when
+reward shaping stabilizes it. The remaining sources are the operating manual for
+doing that shaping through an advisor rather than through the executor.
+
+## Context
+
+- **Frozen executors are the norm.** Customers increasingly train against black-box
+  frontier models (via API) or premium open checkpoints they are unwilling to
+  overwrite; the trainable surface is the small advisor or hint model.
+- **Sparse terminal rewards are the default** for verifiable-reward post-training.
+  GRPO's relative-advantage signal collapses when every rollout in a group gets
+  the same reward, which is exactly what happens on hard reasoning tasks before
+  a run has warmed up.
+- **Long-CoT trajectories are expensive per step.** That makes advisor-style
+  partitioning (cheap hints, expensive executor) not just a training
+  abstraction but a real inference-economics lever.
+- The Modal-side concern is matching this shape with the RL harness and
+  training gym: expose verifier hooks, per-rollout observability, and
+  hint-distribution controls at the right layer so customers can run these
+  recipes without rebuilding scaffolding.
+
+## Key themes
+
+- **Advisor, not executor, is the trainable surface.** Asawa et al. make this
+  explicit: RL updates on a small advisor model are what move downstream
+  performance of a frozen frontier executor.
+- **Hints reshape the rollout distribution, not the reward.** SAGE keeps the
+  terminal verifier reward unchanged and injects self-generated hints during
+  rollouts to stop GRPO advantages from collapsing under sparse rewards. This
+  is a different lever than reward shaping, and the two are complementary.
+- **Step-level uncertainty matters more than trajectory-level outcomes.**
+  SMART's score-based selective scaffolding and the long-CoT paper's framing of
+  error correction as a latent-but-incentivizable capability both point away
+  from pure outcome-only reward toward some form of step-level signal.
+- **Hints are an inference-economics primitive too.** LLM Shepherding shows
+  that the same cheap-advisor/expensive-executor partition that trains well
+  also serves cheaply: 42-94% inference cost reduction versus full LLM
+  generation at matched accuracy.
+- **Reward shaping is still the backstop.** None of the hint-based recipes
+  remove the need for a well-shaped reward. Yeo et al. is the reminder that if
+  the underlying RL loop does not have CoT length and verifiable reward under
+  control, no amount of advisor cleverness fixes it.
+
+## Suggested reading order
+
+1. Start with **Yeo et al., Demystifying Long CoT** to set the RL-side ground
+   truth: what reward shaping actually buys you when CoT length is the
+   emergent variable, and what SFT vs. pure-RL really trade off.
+2. Read **Asawa et al., Advisor Models** next. It is the clearest statement of
+   "the advisor is the trainable surface" and the paper most directly aligned
+   with the Lovable workstream's shape.
+3. Read **SAGE (Liao et al.)** for the concrete GRPO fix. It is the most
+   actionable recipe in the set for an RL harness: same verifier, hint-augmented
+   rollouts, no-hint policy at test time.
+4. Read **SMART (Yi et al.)** for the step-level intervention angle. It is the
+   closest external analogue to fine-grained credit assignment over reasoning
+   steps and a useful mirror for the eval-and-rubric work already underway.
+5. Finish with **LLM Shepherding (Dong et al.)** to flip the framing to
+   inference economics. The same partition that makes advisor RL work in
+   training is also what makes mixed SLM+LLM serving measurably cheaper.
+
+<SourceList sources={sources} />

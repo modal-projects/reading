@@ -1,0 +1,119 @@
+[
+  {
+    "id": "yeo-long-cot-2025",
+    "title": "Demystifying Long Chain-of-Thought Reasoning in LLMs",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2502.03373",
+    "pdfPath": "/spikes/advisor-models-and-hinting-for-llm-reasoning/assets/demystifying-long-cot.pdf",
+    "authors": [
+      "Edward Yeo",
+      "Yuxuan Tong",
+      "Morry Niu",
+      "Graham Neubig",
+      "Xiang Yue"
+    ],
+    "publishedAt": "2025-02-05",
+    "summary": "A systematic study of what actually makes long chain-of-thought emerge from RL. The headline findings: SFT is optional but simplifies training, reasoning capability does not grow automatically with compute, and reward shaping is the specific lever that stabilizes CoT length growth. The paper also argues that verifiable reward signals scale even on noisy, web-extracted solutions when paired with filtering, and that error correction is largely latent in base models but needs serious compute to be incentivized.",
+    "whyRelevant": "This is the grounding read for every advisor/hinting paper in the spike. Those recipes work on top of a base model whose long-CoT behavior has to be either trained in or steered around; this paper is the clearest public account of which RL-side design choices (reward shape, length penalties, verifiable reward quality) actually decide whether long CoT stabilizes instead of collapsing or runaway-growing. That directly informs what an RL harness on Modal has to expose to customers training reasoning models.",
+    "tags": [
+      "rl",
+      "long-cot",
+      "reward-shaping",
+      "foundation"
+    ],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "asawa-advisor-models-2025",
+    "title": "How to Train Your Advisor: Steering Black-Box LLMs with Advisor Models",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2510.02453",
+    "pdfPath": "/spikes/advisor-models-and-hinting-for-llm-reasoning/assets/train-your-advisor.pdf",
+    "authors": [
+      "Parth Asawa",
+      "Alan Zhu",
+      "Abby O'Neill",
+      "Matei Zaharia",
+      "Alexandros G. Dimakis",
+      "Joseph E. Gonzalez"
+    ],
+    "publishedAt": "2025-10-02",
+    "summary": "Introduces Advisor Models: small open-weight models trained to generate per-instance natural-language advice that steers a frozen black-box frontier model. The advisor is optimized with RL against downstream task outcomes on the combined advisor+executor pipeline, rather than supervised on advice text. Reported wins include +71% on RuleArena (Taxes) with GPT-5, a 24.6% reduction in SWE-agent steps with Gemini 3 Pro, and durable personalization gains. The paper also shows that an advisor trained against a cheap student executor transfers to a frontier executor.",
+    "whyRelevant": "This is the cleanest statement of the training shape the Lovable workstream is reaching for: freeze a strong executor, train a small advisor with RL, and make the advisor's output the thing that actually moves the eval. It is the paper most directly aligned with the 'train advisor -> eval go up' step, and its transferability finding is useful framing for Modal's RL harness customers who will want to train advisors against cheap rollouts and deploy them against premium models.",
+    "tags": [
+      "advisor-executor",
+      "rl",
+      "black-box-steering",
+      "agents"
+    ],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "dong-llm-shepherding-2026",
+    "title": "Pay for Hints, Not Answers: LLM Shepherding for Cost-Efficient Inference",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2601.22132",
+    "pdfPath": "/spikes/advisor-models-and-hinting-for-llm-reasoning/assets/llm-shepherding.pdf",
+    "authors": [
+      "Ziming Dong",
+      "Hardik Sharma",
+      "Evan O'Toole",
+      "Jaya Prakash Champati",
+      "Kui Wu"
+    ],
+    "publishedAt": "2026-01-29",
+    "summary": "Proposes LLM Shepherding: instead of routing a query either fully to an SLM or fully to an LLM, request only a short prefix (a hint) from the LLM and let the SLM complete the response. A two-stage predictor decides whether a hint is needed and how many tokens to request. On GSM8K, CNK12, HumanEval, and MBPP the approach cuts LLM cost by 42-94% against LLM-only inference and reaches up to 2.8x cost reduction over routing and cascading baselines at matched accuracy.",
+    "whyRelevant": "This is the inference-economics counterpart to the advisor-training story. For Modal, it gives a concrete argument about why 'executor compute is expensive, advisor/hint compute is cheap' is a real product surface, not a training-only abstraction: the same partitioning that makes advisor RL work in training also makes mixed LLM+SLM inference meaningfully cheaper. Useful when thinking about how trained advisors deploy on top of Modal's inference stack.",
+    "tags": [
+      "inference",
+      "hinting",
+      "cost-efficiency",
+      "slm-llm"
+    ],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "yi-smart-2025",
+    "title": "Guiding Reasoning in Small Language Models with LLM Assistance (SMART)",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2504.09923",
+    "pdfPath": "/spikes/advisor-models-and-hinting-for-llm-reasoning/assets/smart-small-reasons-large-hints.pdf",
+    "authors": [
+      "Euiin Yi"
+    ],
+    "publishedAt": "2025-04-14",
+    "summary": "SMART (Small Reasons, Large Hints) frames SLM-LLM collaboration as an optimal policy search over reasoning steps. A score-based evaluator flags uncertain steps in the SLM's chain-of-thought, and an LLM injects corrective reasoning only at those points. The selective, step-level intervention improves performance on math reasoning benchmarks without the cost of full LLM generation or exhaustive sampling.",
+    "whyRelevant": "SMART is the closest external analogue to the 'fine-grained credit assignment over reasoning steps' direction the advisor workstream has been exploring. It makes the case that the useful signal is not 'is this whole trajectory correct' but 'which step was uncertain and needs intervention' - exactly the granularity an advisor/judge needs to expose if single-step and multi-step evals are going to drive real advisor training rather than noisy outcome-only reward.",
+    "tags": [
+      "advisor-executor",
+      "process-supervision",
+      "reasoning",
+      "scaffolding"
+    ],
+    "addedBy": "alessio-modal-labs"
+  },
+  {
+    "id": "liao-sage-2026",
+    "title": "Self-Hinting Language Models Enhance Reinforcement Learning (SAGE)",
+    "kind": "paper",
+    "canonicalUrl": "https://arxiv.org/abs/2602.03143",
+    "pdfPath": "/spikes/advisor-models-and-hinting-for-llm-reasoning/assets/sage-self-hinting.pdf",
+    "authors": [
+      "Baohao Liao",
+      "Hanze Dong",
+      "Xinxing Xu",
+      "Christof Monz",
+      "Jiang Bian"
+    ],
+    "publishedAt": "2026-02-03",
+    "summary": "SAGE is an on-policy GRPO variant that addresses a very concrete failure mode: under sparse terminal rewards, rollouts inside a group often get identical rewards, relative advantages collapse, and updates vanish. SAGE samples a compact self-hint (a plan or decomposition) per prompt and conditions the rollout on (prompt, hint), which increases within-group outcome diversity without changing the terminal verifier reward. At test time the no-hint policy is used. The self-hint distribution also acts as an adaptive curriculum. Reported gains over GRPO: +2.0 on Llama-3.2-3B, +1.2 on Qwen2.5-7B, +1.3 on Qwen3-4B across six benchmarks.",
+    "whyRelevant": "This is the paper that closes the loop between the advisor framing and the 'reward shaping stabilizes long CoT' finding in Yeo et al. Instead of reshaping the reward, SAGE reshapes the rollout distribution via self-generated hints so that GRPO's relative-advantage signal does not collapse. For Modal's GRPO-shaped RL harness and the advisor workstream, it is the most directly actionable recipe in the set: same verifier, same terminal reward, but a hint distribution that keeps training signal alive under sparse rewards.",
+    "tags": [
+      "rl",
+      "grpo",
+      "self-hinting",
+      "sparse-reward"
+    ],
+    "addedBy": "alessio-modal-labs"
+  }
+]
